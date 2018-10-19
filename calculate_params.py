@@ -1,5 +1,6 @@
 import gspread
 from utils import DataSheet
+from utils import SearchInColumns
 from oauth2client.service_account import ServiceAccountCredentials
 
 
@@ -13,6 +14,7 @@ def compute_tscr_elo_term_TU0_xxxx(sheet):
     datos_sh = sheet.data_sheet
     nucleotid_seq_sh = sheet.parent.worksheet('Secuencia nucleotidica')
     mRNA_list = datos_sh.range('AO4:AO8')
+
     nucleotid_names = [cell.value for cell in nucleotid_seq_sh.range(
         NUCLEOTID_ROW_INIT, NUCLEOTID_COL,
         NUCLEOTID_ROW_END, NUCLEOTID_COL
@@ -25,6 +27,9 @@ def compute_tscr_elo_term_TU0_xxxx(sheet):
         atp = seq.count('A')
         atps.append(atp)
     print(sum(atps))
+    search = SearchInColumns(nucleotid_seq_sh, 'A3:A282')
+    rows = search.look_for(datos_sh, 'AO4:AO8')
+    print(rows)
 
 
 def look_nucleotid_seq(nucleotid_names, mRNA, is_sorted=False):
