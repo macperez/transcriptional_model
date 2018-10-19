@@ -1,4 +1,5 @@
 import gspread
+from utils import DataSheet
 from oauth2client.service_account import ServiceAccountCredentials
 
 
@@ -8,9 +9,9 @@ NUCLEOTID_ROW_INIT = 3
 NUCLEOTID_ROW_END = 282
 
 
-def compute_tscr_elo_term_TU0_xxxx(sheet, worksheet):
-    datos_sh = sheet.worksheet('Datos')
-    nucleotid_seq_sh = sheet.worksheet('Secuencia nucleotidica')
+def compute_tscr_elo_term_TU0_xxxx(sheet):
+    datos_sh = sheet.data_sheet
+    nucleotid_seq_sh = sheet.parent.worksheet('Secuencia nucleotidica')
     mRNA_list = datos_sh.range('AO4:AO8')
     nucleotid_names = [cell.value for cell in nucleotid_seq_sh.range(
         NUCLEOTID_ROW_INIT, NUCLEOTID_COL,
@@ -23,7 +24,7 @@ def compute_tscr_elo_term_TU0_xxxx(sheet, worksheet):
         seq = nucleotid_seq_sh.cell(row, SEQUENCE_COL).value
         atp = seq.count('A')
         atps.append(atp)
-    print(atps)
+    print(sum(atps))
 
 
 def look_nucleotid_seq(nucleotid_names, mRNA, is_sorted=False):
@@ -44,9 +45,10 @@ def main():
 
     gc = gspread.authorize(credentials)
     # Open a worksheet from spreadsheet with one shot
-    sheet = gc.open("ematix_05_10")
-    wk = sheet.worksheet('Datos')
-    compute_tscr_elo_term_TU0_xxxx(sheet, wk)
+    spreadsheet = gc.open("ematix_05_10")
+    wk = spreadsheet.worksheet('Datos')
+    sheet = DataSheet(spreadsheet, wk)
+    compute_tscr_elo_term_TU0_xxxx(sheet)
     # wks.update_acell('B2', "it's down there somewhere, let me take another look.")
 
     # Fetch a cell range
