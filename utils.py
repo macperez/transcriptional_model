@@ -30,8 +30,12 @@ class SearchInColumns():
             raise ValueError
 
     def get_values(self, datasheet, range_from):
+<<<<<<< HEAD
         pass
 
+=======
+        
+>>>>>>> aee7289cfc7039443f47c266026a2d765b5b2240
 
 def extract_letters(col_row_notation='JK288'):
     letters = []
