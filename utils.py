@@ -9,6 +9,7 @@ class DataSheet():
 class SearchInColumns():
     def __init__(self, datasheet_in, range_in):
         square_dimensions = obtains_rows(range_in)
+        self.datasheet_in = datasheet_in
         self.start_row = square_dimensions[0]
         self.end_row = square_dimensions[2]
         self.values_to_look_in = [cell.value for cell in
@@ -29,9 +30,10 @@ class SearchInColumns():
             print("Error: No se encuentra el primer valor de la serie")
             raise ValueError
 
-    def get_values(self, datasheet, range_from):
-        pass
-
+    def get_values(self, column):
+        range_sh = get_range(self.rows[0], self.rows[-1], column)
+        values = [cell.value for cell in self.datasheet_in.range(range_sh)]
+        return values
 
 def extract_letters(col_row_notation='JK288'):
     letters = []
@@ -59,6 +61,14 @@ def obtains_rows(sht_range_str='A35:JK288'):
     col_end, row_end = extract_letters(rc_end)
     return (row_init, column(col_init), row_end, column(col_end))
 
+def get_range(row_init, row_end, col_init, col_end=None):
+    if col_end is None:
+        col = col_init
+        range = '{}{}:{}{}'.format(col, row_init, col, row_end)
+    else:
+        range = '{}{}:{}{}'.format(col_init, row_init, col_end, row_end)
+
+    return range
 
 if __name__ == '__main__':
     print(obtains_rows())
