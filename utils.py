@@ -7,6 +7,7 @@ class DataSheet():
 
 
 class SearchInColumns():
+    
     def __init__(self, datasheet_in, range_in):
         square_dimensions = obtains_rows(range_in)
         self.datasheet_in = datasheet_in
@@ -29,6 +30,21 @@ class SearchInColumns():
         except ValueError:
             print("Error: No se encuentra el primer valor de la serie")
             raise ValueError
+
+    def look_for(self, datasheet, col, first_row, last_row, same_arrangement=True):
+        self.values_to_look_from = [cell.value for cell in
+                                    datasheet.range(first_row, col, last_row, col)]
+        try:
+            first_index = self.values_to_look_in.index(self.
+                                                       values_to_look_from[0])
+            first_row = first_index + self.start_row
+            if same_arrangement:
+                self.rows = [index + self.start_row
+                             for index in range(len(self.values_to_look_from))]
+        except ValueError:
+            print("Error: No se encuentra el primer valor de la serie")
+            raise ValueError
+
 
     def get_values(self, column):
         range_sh = get_range(self.rows[0], self.rows[-1], column)
