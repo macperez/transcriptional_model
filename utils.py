@@ -1,3 +1,4 @@
+import collections
 
 
 class DataSheet():
@@ -7,52 +8,41 @@ class DataSheet():
 
 
 class SearchInColumns():
+    def __init__(self, base_datasheet, base_range, key_column):
+        sq_dimensions = get_square_coordinates(base_range)
+        self.key_column = key_column
+        self.datasheet_in = base_datasheet
+        self.init_row = sq_dimensions[0]
+        self.init_col = sq_dimensions[1]
+        self.end_row = sq_dimensions[2]
+        self.end_col = sq_dimensions[3]
+        rng_sht = base_datasheet.range(self.init_row, self.init_col,
+                                       self.end_row, self.end_col)
+        self.base_cells = self._convert_to_dict(rng_sht)
+        self.cells = None
+        self.results = None
+
+    def _convert_to_dict(self, sh_range):
+        if self.end_col > 2:
+            raise Exception('Incorrect format to use SearchInColumns')
+        d = dict(zip(sh_range[::2], sh_range[1::2]))
+        ordered = collections.OrderedDict(sorted(d.items(),
+                                          key=lambda t: t[0].row))
+        return ordered
+
+    def preload_cells(self, datasheet, search_range):
+        self.cells = [cell for cell in datasheet.range(search_range)]
+
+    def search(self, init, end, same_arrangement=True):
+        values = []
+        for cell in self.cells:
+            if cell.row >= init and cell.row <= end:
+                values.append(cell)
+        # for values in values: 
+        
     
-    def __init__(self, datasheet_in, range_in):
-        square_dimensions = obtains_rows(range_in)
-        self.datasheet_in = datasheet_in
-        self.start_row = square_dimensions[0]
-        self.end_row = square_dimensions[2]
-        self.values_to_look_in = [cell.value for cell in
-                                  datasheet_in.range(range_in)]
-        self.rows = None
 
-    def look_for(self, datasheet, range_from, same_arrangement=True):
-        self.values_to_look_from = [cell.value for cell in
-                                    datasheet.range(range_from)]
-        try:
-            first_index = self.values_to_look_in.index(self.
-                                                       values_to_look_from[0])
-            first_row = first_index + self.start_row
-            if same_arrangement:
-                self.rows = [index + self.start_row
-                             for index in range(len(self.values_to_look_from))]
-        except ValueError:
-            print("Error: No se encuentra el primer valor de la serie")
-            raise ValueError
-
-    def look_for(self, datasheet, col, first_row, last_row, same_arrangement=True):
-        self.values_to_look_from = [cell.value for cell in
-                                    datasheet.range(first_row, col, last_row, col)]
-        try:
-            first_index = self.values_to_look_in.index(self.
-                                                       values_to_look_from[0])
-            first_row = first_index + self.start_row
-            if same_arrangement:
-                self.rows = [index + self.start_row
-                             for index in range(len(self.values_to_look_from))]
-        except ValueError:
-            print("Error: No se encuentra el primer valor de la serie")
-            raise ValueError
-
-
-    def get_values(self, column):
-        range_sh = get_range(self.rows[0], self.rows[-1], column)
-        values = [cell.value for cell in self.datasheet_in.range(range_sh)]
-        return values
-
-
-def extract_letters(col_row_notation='JK288'):
+def extract_coordinates(col_row_notation='JK288'):
     letters = []
     numbers = []
     for ch in col_row_notation:
@@ -72,10 +62,10 @@ def column(cadena):
     return col
 
 
-def obtains_rows(sht_range_str='A35:JK288'):
+def get_square_coordinates(sht_range_str='A35:JK288'):
     rc_init, rc_end = sht_range_str.split(':')
-    col_init, row_init = extract_letters(rc_init)
-    col_end, row_end = extract_letters(rc_end)
+    col_init, row_init = extract_coordinates(rc_init)
+    col_end, row_end = extract_coordinates(rc_end)
     return (row_init, column(col_init), row_end, column(col_end))
 
 
@@ -89,4 +79,4 @@ def get_range(row_init, row_end, col_init, col_end=None):
     return range
 
 if __name__ == '__main__':
-    print(obtains_rows())
+    print(get_square_coordinates('A24:JF66'))

@@ -30,10 +30,12 @@ def calculate_tscr_elo_term_TUB0_xxxx(sheet):
     end_ranges = end_ranges[1:]
     end_ranges.append(285)
     nucleotid_seq_sh = sheet.parent.worksheet('Secuencia nucleotidica')
+    searcher = SearchInColumns(nucleotid_seq_sh, 'A3:B282', 1)
+    searcher.preload_cells(datos_sh, 'AM4:AM285')
     for init, end in zip(tu_rows, end_ranges):
-        search = SearchInColumns(nucleotid_seq_sh, 'A3:A282')
-        search.look_for(nucleotid_seq_sh, 1, init, end)
-        results = search.get_values('B')
+        # searcher.search(nucleotid_seq_sh, 1, init, end)
+        results = searcher.search(init, end)
+        
         atp = sum((seq.count('A') for seq in results))
         print(atp)
 
