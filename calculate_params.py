@@ -4,10 +4,10 @@ from utils import SearchInColumns
 from oauth2client.service_account import ServiceAccountCredentials
 
 
-NUCLEOTID_COL = 1
-SEQUENCE_COL = 2
-NUCLEOTID_ROW_INIT = 3
-NUCLEOTID_ROW_END = 282
+
+ATP_COL = 19
+H_COL = 26
+MRNA_ROW_END = 285
 
 
 def compute_tscr_elo_term_TU0_xxxx(sheet):
@@ -28,16 +28,28 @@ def calculate_tscr_elo_term_TUB0_xxxx(sheet):
             tu_rows.append(cell.row)
     end_ranges = [row - 1 for row in tu_rows]
     end_ranges = end_ranges[1:]
-    end_ranges.append(285)
+    end_ranges.append(MRNA_ROW_END)
     nucleotid_seq_sh = sheet.parent.worksheet('Secuencia nucleotidica')
     searcher = SearchInColumns(nucleotid_seq_sh, 'A3:B282', 1)
     searcher.preload_cells(datos_sh, 'AM4:AM285')
     for init, end in zip(tu_rows, end_ranges):
-        # searcher.search(nucleotid_seq_sh, 1, init, end)
         results = searcher.search(init, end)
-        
-        atp = sum((seq.count('A') for seq in results))
-        print(atp)
+        atp = sum((seq[1].count('A') for seq in results))
+        ctp = sum((seq[1].count('C') for seq in results))
+        gtp = sum((seq[1].count('G') for seq in results))
+        utp = sum((seq[1].count('T') for seq in results))
+        ppi = atp + ctp + gtp + utp
+        row_cell_list = datos_sh.range(init, ATP_COL, init, H_COL)
+        row_cell_list[0].value = atp
+        row_cell_list[1].value = ctp
+        row_cell_list[2].value = gtp
+        row_cell_list[3].value = utp
+        row_cell_list[4].value = ppi
+        row_cell_list[5].value = 3
+        row_cell_list[6].value = 3
+        row_cell_list[7].value = 3
+        datos_sh.update_cells(row_cell_list)
+        print('From row {} to row {}'.format(init, end))
 
 
 def main():

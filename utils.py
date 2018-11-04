@@ -1,5 +1,3 @@
-import collections
-
 
 class DataSheet():
     def __init__(self, spreadsheet, wk):
@@ -25,22 +23,22 @@ class SearchInColumns():
     def _convert_to_dict(self, sh_range):
         if self.end_col > 2:
             raise Exception('Incorrect format to use SearchInColumns')
-        d = dict(zip(sh_range[::2], sh_range[1::2]))
-        ordered = collections.OrderedDict(sorted(d.items(),
-                                          key=lambda t: t[0].row))
-        return ordered
+        info = {}
+        for cell_key, cell_value in zip(sh_range[::2], sh_range[1::2]):
+            info[cell_key.value] = (cell_key, cell_value.value)
+        return info
 
     def preload_cells(self, datasheet, search_range):
-        self.cells = [cell for cell in datasheet.range(search_range)]
+        self.cells = [cell for cell in datasheet.range(search_range) if cell.value != '']
 
     def search(self, init, end, same_arrangement=True):
-        values = []
+        result = []
         for cell in self.cells:
             if cell.row >= init and cell.row <= end:
-                values.append(cell)
-        # for values in values: 
-        
-    
+                if self.base_cells[cell.value] != '':
+                    result.append(self.base_cells[cell.value])
+        return result
+
 
 def extract_coordinates(col_row_notation='JK288'):
     letters = []
