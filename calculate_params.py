@@ -7,6 +7,15 @@ ATP_COL = 19
 H_COL = 26
 MRNA_ROW_END = 285
 
+# (4, 49, 282, 70) == AW4:BR282
+TL_ELO_XXXX_1_RIB1_FIRST_ROW = 4
+TL_ELO_XXXX_1_RIB1_LAST_ROW = 282
+TL_ELO_XXXX_1_RIB1_FIRST_COL = 49
+TL_ELO_XXXX_1_RIB1_LAST_COL = 70
+WIDTH_RIB = TL_ELO_XXXX_1_RIB1_LAST_COL - TL_ELO_XXXX_1_RIB1_FIRST_COL + 1
+
+
+
 
 def calculate_tscr_elo_term_TUB0_xxxx(sheet):
     tu_rows, end_ranges = get_tu_limits(sheet)
@@ -41,14 +50,28 @@ def calculate_tl_elo_xxxx_1_rib1(sheet):
     datos_sh = sheet.data_sheet
     searcher.preload_cells(datos_sh, 'AM4:AM285')
     computation_cell_range = datos_sh.range('AW4:BR282')
-    import ipdb; ipdb.set_trace()
-    for init, end in zip(tu_rows, end_ranges):
-        index = 0
-        results = searcher.search(init, end)
-        for letter in 'ARNDEGHILKMFPSTYVCWQA':
-           pep = sum((seq[1].count(letter) for seq in results))
-           
-        
+
+    results = searcher.search(TL_ELO_XXXX_1_RIB1_FIRST_ROW,
+                              TL_ELO_XXXX_1_RIB1_LAST_ROW)
+    index = 0
+    for gen_seq in results:
+        # first col
+        seq = gen_seq[1]
+        efg_gtp = len(seq)
+        computation_cell_range[index].value = efg_gtp
+        index += 1
+        # letters cols
+        intermediate = []
+        for letter in 'ARNDEGHILKMFPSTYVCWQ':
+            computation_cell_range[index].value = seq.count(letter)
+            intermediate.append(seq.count(letter))
+            index += 1
+        # last col
+        computation_cell_range[index].value = sum(intermediate)*5
+
+    datos_sh.update_cells(computation_cell_range)
+
+
 
 def get_tu_limits(sheet):
     datos_sh = sheet.data_sheet

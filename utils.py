@@ -1,3 +1,5 @@
+import sys
+
 
 class DataSheet():
     def __init__(self, spreadsheet, wk):
@@ -77,4 +79,6 @@ def get_range(row_init, row_end, col_init, col_end=None):
     return range
 
 if __name__ == '__main__':
-    print(get_square_coordinates('A24:JF66'))
+    if len(sys.argv) > 1:
+        rng = sys.argv[1]
+        print(get_square_coordinates(rng))
