@@ -9,7 +9,7 @@ MRNA_ROW_END = 285
 
 # (4, 49, 282, 70) == AW4:BR282
 TL_ELO_XXXX_1_RIB1_FIRST_ROW = 4
-TL_ELO_XXXX_1_RIB1_LAST_ROW = 282
+TL_ELO_XXXX_1_RIB1_LAST_ROW = 285
 TL_ELO_XXXX_1_RIB1_FIRST_COL = 49
 TL_ELO_XXXX_1_RIB1_LAST_COL = 70
 WIDTH_RIB = TL_ELO_XXXX_1_RIB1_LAST_COL - TL_ELO_XXXX_1_RIB1_FIRST_COL + 1
@@ -49,10 +49,9 @@ def calculate_tl_elo_xxxx_1_rib1(sheet):
     searcher = SearchInColumns(amino_seq_sh, 'A3:B282', 1)
     datos_sh = sheet.data_sheet
     searcher.preload_cells(datos_sh, 'AM4:AM285')
-    computation_cell_range = datos_sh.range('AW4:BR282')
-
     results = searcher.search(TL_ELO_XXXX_1_RIB1_FIRST_ROW,
                               TL_ELO_XXXX_1_RIB1_LAST_ROW)
+    computation_cell_range = datos_sh.range('AW4:BR285')
     index = 0
     for gen_seq in results:
         # first col
@@ -68,9 +67,8 @@ def calculate_tl_elo_xxxx_1_rib1(sheet):
             index += 1
         # last col
         computation_cell_range[index].value = sum(intermediate)*5
-
+        index += 1
     datos_sh.update_cells(computation_cell_range)
-
 
 
 def get_tu_limits(sheet):

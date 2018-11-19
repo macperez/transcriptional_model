@@ -27,18 +27,19 @@ class SearchInColumns():
             raise Exception('Incorrect format to use SearchInColumns')
         info = {}
         for cell_key, cell_value in zip(sh_range[::2], sh_range[1::2]):
-            info[cell_key.value] = (cell_key, cell_value.value)
+            info[cell_key.value.upper()] = (cell_key, cell_value.value)
         return info
 
     def preload_cells(self, datasheet, search_range):
-        self.cells = [cell for cell in datasheet.range(search_range) if cell.value != '']
+        self.cells = [cell for cell in datasheet.range(search_range)
+                      if cell.value != '']
 
     def search(self, init, end, same_arrangement=True):
         result = []
         for cell in self.cells:
             if cell.row >= init and cell.row <= end:
-                if self.base_cells[cell.value] != '':
-                    result.append(self.base_cells[cell.value])
+                if self.base_cells[cell.value.upper()] != '':
+                    result.append(self.base_cells[cell.value.upper()])
         return result
 
 
