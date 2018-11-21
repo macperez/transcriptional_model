@@ -55,7 +55,7 @@ def calculate_tl_elo_xxxx_1_rib1(sheet):
     index = 0
     for gen_seq in results:
         # first col
-        seq = gen_seq[1]
+        seq = gen_seq
         efg_gtp = len(seq)
         computation_cell_range[index].value = efg_gtp
         index += 1

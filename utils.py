@@ -27,20 +27,25 @@ class SearchInColumns():
             raise Exception('Incorrect format to use SearchInColumns')
         info = {}
         for cell_key, cell_value in zip(sh_range[::2], sh_range[1::2]):
-            info[cell_key.value.upper()] = (cell_key, cell_value.value)
+            info[cell_key.value.upper()] = cell_value.value
         return info
 
     def preload_cells(self, datasheet, search_range):
-        self.cells = [cell for cell in datasheet.range(search_range)
-                      if cell.value != '']
+        self.cells = [cell for cell in datasheet.range(search_range)]
 
     def search(self, init, end, same_arrangement=True):
         result = []
+        iteration = 0
         for cell in self.cells:
             if cell.row >= init and cell.row <= end:
-                if self.base_cells[cell.value.upper()] != '':
+                if cell.value.upper() in self.base_cells:
                     result.append(self.base_cells[cell.value.upper()])
-        return result
+                else:
+                    result.append('')
+
+                print(" Fila {}, iter {}".format(cell.row, iteration+init))
+            iteration += 1
+        return result   
 
 
 def extract_coordinates(col_row_notation='JK288'):
