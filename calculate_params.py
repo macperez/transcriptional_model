@@ -7,13 +7,17 @@ ATP_COL = 19
 H_COL = 26
 MRNA_ROW_END = 285
 
-# (4, 49, 282, 70) == AW4:BR282
+# (4, 49, 282, 70) == AW4:BR285
 TL_ELO_XXXX_1_RIB1_FIRST_ROW = 4
 TL_ELO_XXXX_1_RIB1_LAST_ROW = 285
 TL_ELO_XXXX_1_RIB1_FIRST_COL = 49
 TL_ELO_XXXX_1_RIB1_LAST_COL = 70
-WIDTH_RIB = TL_ELO_XXXX_1_RIB1_LAST_COL - TL_ELO_XXXX_1_RIB1_FIRST_COL + 1
 
+# (4, 71, 4, 96) == BS4:CR285
+TL_ELO_XXXX_1_RIB2_FIRST_ROW = 4
+TL_ELO_XXXX_1_RIB2_LAST_ROW = 285
+TL_ELO_XXXX_1_RIB2_FIRST_COL = 71
+TL_ELO_XXXX_1_RIB1_LAST_COL = 96
 
 
 
@@ -60,16 +64,46 @@ def calculate_tl_elo_xxxx_1_rib1(sheet):
         computation_cell_range[index].value = efg_gtp
         index += 1
         # letters cols
-        intermediate = []
         for letter in 'ARNDEGHILKMFPSTYVCWQ':
             computation_cell_range[index].value = seq.count(letter)
-            intermediate.append(seq.count(letter))
             index += 1
         # last col
-        computation_cell_range[index].value = sum(intermediate)*5
+        computation_cell_range[index].value = efg_gtp*3
         index += 1
     datos_sh.update_cells(computation_cell_range)
 
+
+def calculate_tl_elo_xxxx_1_rib2(sheet):
+    """
+    Very similar to calculate_tl_elo_xxxx_1_rib1 but if the sequence ends
+    with an specific letter then column that contains this summatory less one.
+    """
+    tu_rows, end_ranges = get_tu_limits(sheet)
+    amino_seq_sh = sheet.parent.worksheet('Secuencia aminoacidica')
+    searcher = SearchInColumns(amino_seq_sh, 'A3:B282', 1)
+    datos_sh = sheet.data_sheet
+    searcher.preload_cells(datos_sh, 'AM4:AM285')
+    results = searcher.search(TL_ELO_XXXX_1_RIB2_FIRST_ROW,
+                              TL_ELO_XXXX_1_RIB2_LAST_ROW)
+    computation_cell_range = datos_sh.range('BS4:CR285')
+    index = 0
+    for gen_seq in results:
+        # first three cols
+        seq = gen_seq[:-1] # remove the last letter in seq
+        h2o = len(seq)
+        ef_g_gdp = h2o
+        ef_tu_gdp = h2o
+        computation_cell_range[index].value = h2o
+        index += 1
+        computation_cell_range[index].value = ef_g_gdp
+        index += 1
+        computation_cell_range[index].value = ef_tu_gdp
+        index += 1
+        # letters cols
+        for letter in 'ARNDEGHILKMFPSTYVCWQ':
+            computation_cell_range[index].value = seq.count(letter)
+            index += 1
+        # last three cols
 
 def get_tu_limits(sheet):
     datos_sh = sheet.data_sheet
@@ -80,7 +114,6 @@ def get_tu_limits(sheet):
     end_ranges = [row - 1 for row in tu_rows]
     end_ranges = end_ranges[1:]
     end_ranges.append(MRNA_ROW_END)
-
     return tu_rows, end_ranges
 
 
