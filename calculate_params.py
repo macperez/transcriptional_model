@@ -89,7 +89,7 @@ def calculate_tl_elo_xxxx_1_rib2(sheet):
     index = 0
     for gen_seq in results:
         # first three cols
-        seq = gen_seq[:-1] # remove the last letter in seq
+        seq = gen_seq[:-1]  # remove the last letter in seq
         h2o = len(seq)
         ef_g_gdp = h2o
         ef_tu_gdp = h2o
@@ -104,6 +104,17 @@ def calculate_tl_elo_xxxx_1_rib2(sheet):
             computation_cell_range[index].value = seq.count(letter)
             index += 1
         # last three cols
+        mg2 = ef_g_gdp * 5
+        computation_cell_range[index].value = mg2
+        index += 1
+        pi = h2o * 2
+        computation_cell_range[index].value = pi
+        index += 1
+        h = h2o * 2
+        computation_cell_range[index].value = pi
+        index += 1
+    datos_sh.update_cells(computation_cell_range)
+
 
 def get_tu_limits(sheet):
     datos_sh = sheet.data_sheet
@@ -127,7 +138,8 @@ def main():
     wk = spreadsheet.worksheet('Datos')
     sheet = DataSheet(spreadsheet, wk)
     # calculate_tscr_elo_term_TUB0_xxxx(sheet)
-    calculate_tl_elo_xxxx_1_rib1(sheet)
-
+    # calculate_tl_elo_xxxx_1_rib1(sheet)
+    calculate_tl_elo_xxxx_1_rib2(sheet)
+    
 if __name__ == '__main__':
     main()
