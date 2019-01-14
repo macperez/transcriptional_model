@@ -44,7 +44,7 @@ def calculate_tscr_elo_term_TUB0_xxxx(sheet):
         row_cell_list[6].value = 3
         row_cell_list[7].value = 3
         datos_sh.update_cells(row_cell_list)
-        
+
 
 
 def calculate_tl_elo_xxxx_1_rib1(sheet):
@@ -85,7 +85,7 @@ def calculate_tl_elo_xxxx_1_rib2(sheet):
     searcher.preload_cells(datos_sh, 'AM4:AM285')
     crowed_results = searcher.search(TL_ELO_XXXX_1_RIB2_FIRST_ROW,
                                      TL_ELO_XXXX_1_RIB2_LAST_ROW)
-    results = [seq.strip() for seq in crowed_results]                         
+    results = [seq.strip() for seq in crowed_results]
     computation_cell_range = datos_sh.range('BS4:CR285')
     name_cols = ['ala1', 'arg1', 'asn1', 'asp1', 'glu1', 'gly1', 'hisR',
                  'ile1', 'leu1', 'lys1', 'met1', 'phe1', 'pro1', 'ser1', 'thr1',
@@ -94,11 +94,12 @@ def calculate_tl_elo_xxxx_1_rib2(sheet):
     mapping_cols = dict(zip(letters, name_cols))
     values_to_update_in_col_CZ = []
     index = 0
-    import ipdb; ipdb.set_trace()
     for gen_seq in results:
         # first three cols
+        if gen_seq is None or gen_seq == '':
+            values_to_update_in_col_CZ.append('##')
+            continue
         last_letter = gen_seq[-1]
-        print("La última letra es {} procesada ".format(last_letter))
         values_to_update_in_col_CZ.append(mapping_cols[last_letter])
         seq = gen_seq[:-1]  # remove the last letter in seq
         h2o = len(seq)
@@ -124,13 +125,12 @@ def calculate_tl_elo_xxxx_1_rib2(sheet):
         h = h2o * 2
         computation_cell_range[index].value = pi
         index += 1
-    # datos_sh.update_cells(computation_cell_range)
+    datos_sh.update_cells(computation_cell_range)
 
     ## Now we update the CZ col: tRNA
-    import ipdb; ipdb.set_trace()
     computation_cell_range = datos_sh.range('CZ4:CZ285')
     index = 0
-    for el in values_to_update_in_col_CZ: 
+    for el in values_to_update_in_col_CZ:
         computation_cell_range[index].value = el
         index += 1
     datos_sh.update_cells(computation_cell_range)
@@ -160,6 +160,6 @@ def main():
     # calculate_tscr_elo_term_TUB0_xxxx(sheet)
     # calculate_tl_elo_xxxx_1_rib1(sheet)
     calculate_tl_elo_xxxx_1_rib2(sheet)
-    
+
 if __name__ == '__main__':
     main()
