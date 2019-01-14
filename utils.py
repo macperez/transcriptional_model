@@ -42,10 +42,8 @@ class SearchInColumns():
                     result.append(self.base_cells[cell.value.upper()])
                 else:
                     result.append('')
-
-                print(" Fila {}, iter {}".format(cell.row, iteration+init))
             iteration += 1
-        return result   
+        return result
 
 
 def extract_coordinates(col_row_notation='JK288'):
