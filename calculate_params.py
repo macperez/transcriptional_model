@@ -130,7 +130,6 @@ def calculate_tl_elo_xxxx_1_rib2(sheet):
     # datos_sh.update_cells(computation_cell_range)
 
     ## Now we update the CZ col: tRNA
-    import ipdb; ipdb.set_trace()
     computation_cell_range = datos_sh.range('CZ4:CZ285')
     index = 0
     for el in values_to_update_in_col_CZ:
@@ -166,4 +165,5 @@ def main():
     calculate_tl_elo_xxxx_1_rib2(sheet)
 
 if __name__ == '__main__':
-    main()
+    # main()
+    print("Deactivated .. module")

@@ -1,4 +1,6 @@
 import sys
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 
 class DataSheet():
@@ -46,6 +48,44 @@ class SearchInColumns():
         return result
 
 
+class DataSheetSettings():
+    def __init__(self, key_file, scope):
+        self.key_file = key_file
+        self.scope = scope
+
+
+class ReaderDataSheet():
+    def __init__(self, google_sheet_name, datasheet_settings):
+        credentials = ServiceAccountCredentials.\
+                from_json_keyfile_name(datasheet_settings.key_file,
+                                       datasheet_settings.scope)
+        gc = gspread.authorize(credentials)
+        self.spreadsheet = gc.open(google_sheet_name)
+
+    def read_from(self, worksheet_name, cell_str):
+        wk = self.spreadsheet.worksheet(worksheet_name)
+        return wk.acell(cell_str).value
+
+    def filtered_values(self, worksheet_name, range_str, filter_type):
+        wk = self.spreadsheet.worksheet(worksheet_name)
+        collection = wk.range(range_str)
+
+        matrix = get_matrix_form_range(range_str, collection)
+        matrix = self.purge_matrix(matrix)# collection = [element for element in collection
+
+
+    def purge_matrix(self, matrix):
+        new_matrix = []
+        for row in matrix:
+            empty = True
+            for cell in row:
+                if cell is not None and cell.value != "":
+                    empty = False
+                    break;
+            if not empty:
+                new_matrix.append(row)
+        return new_matrix
+
 def extract_coordinates(col_row_notation='JK288'):
     letters = []
     numbers = []
@@ -71,6 +111,24 @@ def get_square_coordinates(sht_range_str='A35:JK288'):
     col_init, row_init = extract_coordinates(rc_init)
     col_end, row_end = extract_coordinates(rc_end)
     return (row_init, column(col_init), row_end, column(col_end))
+
+
+def get_matrix_form_range(range_str, cells_range):
+    coordinates = get_square_coordinates(range_str)
+    row_number = coordinates[2] - coordinates[0] + 1
+    col_number = coordinates[3] - coordinates[1] + 1
+    counter = 0
+    matrix = []
+
+    for row in range(row_number):
+        row = []
+        for col in range(col_number):
+            row.append(cells_range[counter])
+            counter += 1
+        matrix.append(row)
+
+    return matrix
+
 
 
 def get_range(row_init, row_end, col_init, col_end=None):
