@@ -66,13 +66,12 @@ class ReaderDataSheet():
         wk = self.spreadsheet.worksheet(worksheet_name)
         return wk.acell(cell_str).value
 
-    def filtered_values(self, worksheet_name, range_str, filter_type):
+    def remove_empty_lines(self, worksheet_name, range_str):
         wk = self.spreadsheet.worksheet(worksheet_name)
         collection = wk.range(range_str)
-
         matrix = get_matrix_form_range(range_str, collection)
         matrix = self.purge_matrix(matrix)# collection = [element for element in collection
-
+        return matrix
 
     def purge_matrix(self, matrix):
         new_matrix = []
@@ -85,6 +84,7 @@ class ReaderDataSheet():
             if not empty:
                 new_matrix.append(row)
         return new_matrix
+
 
 def extract_coordinates(col_row_notation='JK288'):
     letters = []
