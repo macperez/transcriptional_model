@@ -9,6 +9,16 @@ SCOPE = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 
 KEY_FILE = 'transcriptional-model-key.json'
+OUTPUT_TMP = '/tmp/formulas.txt'
+
+def to_file(values_dict, path):
+    import ipdb; ipdb.set_trace()
+    with open(path, 'w') as file:
+        for key, val in values_dict.items():
+            file.write('{}:\n'.format(key))
+            file.write('{}:\n'.format(val))
+
+
 
 
 class Formula():
@@ -16,13 +26,11 @@ class Formula():
         self.raw_formula = raw_formula.strip()
 
     def get_instance(self, row_values):
+        instantiated_formula = self.raw_formula[:]
         for index, value in enumerate(row_values):
-            self.raw_formula = self.raw_formula.replace('[{}]'.format(index),
+            instantiated_formula = instantiated_formula.replace('[{}]'.format(index),
                 value)
-        return self.raw_formula
-
-    def __str__(self):
-        return str(self.raw_formula)
+        return instantiated_formula
 
 
 def formula_TSCR_ini_TUxxx(reader):
@@ -43,12 +51,15 @@ def formula_TSCR_ini_TUxxx(reader):
 
     formula = Formula(reader.read_from('Templates', 'C21'))
     # values = reader.remove_empty_lines('Datos', 'A4:H282')
-    values = reader.remove_empty_lines('Datos', 'A4:H9')
+    values = reader.remove_empty_lines('Datos', 'A4:H282')
+
     results = {}
     for row in values:
         row_values = [cell.value for cell in row]
         results[row_values[0]] = formula.get_instance(row_values)
-        import ipdb; ipdb.set_trace()
+
+    to_file(results, OUTPUT_TMP)
+
 
 
 def main():

@@ -69,6 +69,7 @@ class ReaderDataSheet():
     def remove_empty_lines(self, worksheet_name, range_str):
         wk = self.spreadsheet.worksheet(worksheet_name)
         collection = wk.range(range_str)
+        self._trim_values(collection)
         matrix = get_matrix_form_range(range_str, collection)
         matrix = self.purge_matrix(matrix)# collection = [element for element in collection
         return matrix
@@ -84,6 +85,13 @@ class ReaderDataSheet():
             if not empty:
                 new_matrix.append(row)
         return new_matrix
+
+    def _trim_values(self, collection):
+        for cell in collection:
+            if isinstance(cell.value, str):
+                cell.value = cell.value.strip()
+
+
 
 
 def extract_coordinates(col_row_notation='JK288'):
@@ -139,6 +147,11 @@ def get_range(row_init, row_end, col_init, col_end=None):
         range = '{}{}:{}{}'.format(col_init, row_init, col_end, row_end)
 
     return range
+
+
+
+
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
