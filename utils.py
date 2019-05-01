@@ -2,6 +2,8 @@ import sys
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
 
 class DataSheet():
     def __init__(self, spreadsheet, wk):
@@ -71,7 +73,7 @@ class ReaderDataSheet():
         collection = wk.range(range_str)
         self._trim_values(collection)
         matrix = get_matrix_form_range(range_str, collection)
-        matrix = self.purge_matrix(matrix)# collection = [element for element in collection
+        matrix = self.purge_matrix(matrix)  # collection = [element for element in collection
         return matrix
 
     def purge_matrix(self, matrix):
@@ -81,7 +83,7 @@ class ReaderDataSheet():
             for cell in row:
                 if cell is not None and cell.value != "":
                     empty = False
-                    break;
+                    break
             if not empty:
                 new_matrix.append(row)
         return new_matrix
@@ -90,8 +92,6 @@ class ReaderDataSheet():
         for cell in collection:
             if isinstance(cell.value, str):
                 cell.value = cell.value.strip()
-
-
 
 
 def extract_coordinates(col_row_notation='JK288'):
@@ -138,7 +138,6 @@ def get_matrix_form_range(range_str, cells_range):
     return matrix
 
 
-
 def get_range(row_init, row_end, col_init, col_end=None):
     if col_end is None:
         col = col_init
@@ -149,11 +148,40 @@ def get_range(row_init, row_end, col_init, col_end=None):
     return range
 
 
+def get_letter_coordinates(row, col):
+    if col <= 26:
+        return ALPHABET[col-1] + str(row)
+    cont = 1
+
+    for lt1 in ALPHABET:
+        for lt2 in ALPHABET:
+            if cont == col:
+                return lt1 + lt2 + str(row)
+            cont += 1
+    return None
 
 
+def compare(values, conditions):
+    cont1 = 0
+    cont2 = 0
+    out = False
+    vals = None
+    while cont1 < len(values) and not out:
+        row_val = values[cont1][0].row
+        row_cond = conditions[cont2][0].row
+        if row_val != row_cond:
+            out = True
+            vals = (row_val, row_cond)
+        else:
+            cont1 += 1
+            cont2 += 1
+    if out:
+        print("differents in val {} and cond {}".format(vals[0], vals[1]))
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        rng = sys.argv[1]
-        print(get_square_coordinates(rng))
+    # if len(sys.argv) > 1:
+    #     rng = sys.argv[1]
+    #     print(get_square_coordinates(rng))
+    # else:
+    print(get_letter_coordinates(1, int(sys.argv[1])))
